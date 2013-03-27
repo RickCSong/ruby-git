@@ -26,7 +26,7 @@ module Git
     end
     
     def init
-      command('init')
+      command('init').chomp
     end
     
     # tries to clone the given repo
@@ -55,7 +55,7 @@ module Git
       arr_opts << repository
       arr_opts << clone_dir
       
-      command('clone', arr_opts)
+      command('clone', arr_opts).chomp
       
       (opts[:bare] || opts[:mirror]) ? {:repository => clone_dir} : {:working_directory => clone_dir}
     end
@@ -129,15 +129,15 @@ module Git
         File.file?(path)
       end
       return File.read(rev).chomp if rev
-      command('rev-parse', string)
+      command('rev-parse', string).chomp
     end
     
     def namerev(string)
-      command('name-rev', string).split[1]
+      command('name-rev', string).split[1].chomp
     end
     
     def object_type(sha)
-      command('cat-file', ['-t', sha])
+      command('cat-file', ['-t', sha]).chomp
     end
     
     def object_size(sha)
@@ -220,7 +220,7 @@ module Git
     end
 
     def change_head_branch(branch_name)
-      command('symbolic-ref', ['HEAD', "refs/heads/#{branch_name}"])
+      command('symbolic-ref', ['HEAD', "refs/heads/#{branch_name}"]).chomp
     end
     
     def branches_all
@@ -274,7 +274,7 @@ module Git
       diff_opts << obj2 if obj2.is_a?(String)
       diff_opts << '--' << opts[:path_limiter] if opts[:path_limiter].is_a? String
 
-      command('diff', diff_opts)
+      command('diff', diff_opts).chomp
     end
     
     def diff_stats(obj1 = 'HEAD', obj2 = nil, opts = {})
@@ -350,7 +350,7 @@ module Git
 
     def config_get(name)
       do_get = lambda do
-        command('config', ['--get', name])
+        command('config', ['--get', name]).chomp
       end
 
       if @git_dir
@@ -361,7 +361,7 @@ module Git
     end
 
     def global_config_get(name)
-      command('config', ['--global', '--get', name], false)
+      command('config', ['--global', '--get', name], false).chomp
     end
     
     def config_list
@@ -413,11 +413,11 @@ module Git
     ## WRITE COMMANDS ##
         
     def config_set(name, value)
-      command('config', [name, value])
+      command('config', [name, value]).chomp
     end
 
     def global_config_set(name, value)
-      command('config', ['--global', name, value], false)
+      command('config', ['--global', name, value], false).chomp
     end
           
     def add(path = '.')
@@ -427,7 +427,7 @@ module Git
       else
         arr_opts << path
       end
-      command('add', arr_opts)
+      command('add', arr_opts).chomp
     end
     
     def remove(path = '.', opts = {})
@@ -440,7 +440,7 @@ module Git
         arr_opts << path
       end
 
-      command('rm', arr_opts)
+      command('rm', arr_opts).chomp
     end
 
     def commit(message, opts = {})
@@ -448,26 +448,26 @@ module Git
       arr_opts << '-a' if opts[:add_all]
       arr_opts << '--allow-empty' if opts[:allow_empty]
       arr_opts << "--author" << opts[:author] if opts[:author]
-      command('commit', arr_opts)
+      command('commit', arr_opts).chomp
     end
 
     def reset(commit, opts = {})
       arr_opts = []
       arr_opts << '--hard' if opts[:hard]
       arr_opts << commit if commit
-      command('reset', arr_opts)
+      command('reset', arr_opts).chomp
     end
     
     def apply(patch_file)
       arr_opts = []
       arr_opts << '--' << patch_file if patch_file
-      command('apply', arr_opts)
+      command('apply', arr_opts).chomp
     end
     
     def apply_mail(patch_file)
       arr_opts = []
       arr_opts << '--' << patch_file if patch_file
-      command('am', arr_opts)
+      command('am', arr_opts).chomp
     end
     
     def stashes_all
@@ -483,32 +483,32 @@ module Git
     end
     
     def stash_save(message)
-      output = command('stash save', ['--', message])
+      output = command('stash save', ['--', message]).chomp
       output =~ /HEAD is now at/
     end
 
     def stash_apply(id = nil)
       if id
-        command('stash apply', [id])
+        command('stash apply', [id]).chomp
       else
-        command('stash apply')
+        command('stash apply').chomp
       end
     end
     
     def stash_clear
-      command('stash clear')
+      command('stash clear').chomp
     end
     
     def stash_list
-      command('stash list')
+      command('stash list').chomp
     end
     
     def branch_new(branch)
-      command('branch', branch)
+      command('branch', branch).chomp
     end
     
     def branch_delete(branch)
-      command('branch', ['-D', branch])
+      command('branch', ['-D', branch]).chomp
     end
     
     def checkout(branch, opts = {})
@@ -517,21 +517,21 @@ module Git
       arr_opts << '-b' << opts[:new_branch] if opts[:new_branch]
       arr_opts << branch
       
-      command('checkout', arr_opts)
+      command('checkout', arr_opts).chomp
     end
 
     def checkout_file(version, file)
       arr_opts = []
       arr_opts << version
       arr_opts << file
-      command('checkout', arr_opts)
+      command('checkout', arr_opts).chomp
     end
     
     def merge(branch, message = nil)      
       arr_opts = []
       arr_opts << '-m' << message if message
       arr_opts += [branch]
-      command('merge', arr_opts)
+      command('merge', arr_opts).chomp
     end
 
     def unmerged
@@ -545,10 +545,10 @@ module Git
     def conflicts # :yields: file, your, their
       self.unmerged.each do |f|
         your = Tempfile.new("YOUR-#{File.basename(f)}").path
-        command('show', ":2:#{f}", true, "> #{escape your}") 
+        command('show', ":2:#{f}", true, "> #{escape your}").chomp
 
         their = Tempfile.new("THEIR-#{File.basename(f)}").path
-        command('show', ":3:#{f}", true, "> #{escape their}") 
+        command('show', ":3:#{f}", true, "> #{escape their}").chomp
         yield(f, your, their)
       end
     end
@@ -560,13 +560,13 @@ module Git
       arr_opts << name
       arr_opts << url
       
-      command('remote', arr_opts)
+      command('remote', arr_opts).chomp
     end
     
     # this is documented as such, but seems broken for some reason
     # i'll try to get around it some other way later
     def remote_remove(name)
-      command('remote', ['rm', '--', name])
+      command('remote', ['rm', '--', name]).chomp
     end
     
     def remotes
@@ -578,32 +578,32 @@ module Git
     end
 
     def tag(tag)
-      command('tag', tag)
+      command('tag', tag).chomp
     end
 
     
     def fetch(remote)
-      command('fetch', remote)
+      command('fetch', remote).chomp
     end
     
     def push(remote, branch = 'master', tags = false)
-      command('push', [remote, branch])
-      command('push', ['--tags', remote]) if tags
+      command('push', [remote, branch]).chomp
+      command('push', ['--tags', remote]) if tags.chomp
     end
     
     def tag_sha(tag_name)
       head = File.join(@git_dir, 'refs', 'tags', tag_name)
       return File.read(head).chomp if File.exists?(head)
       
-      command('show-ref',  ['--tags', '-s', tag_name])
+      command('show-ref',  ['--tags', '-s', tag_name]).chomp
     end  
     
     def repack
-      command('repack', ['-a', '-d'])
+      command('repack', ['-a', '-d']).chomp
     end
     
     def gc
-      command('gc', ['--prune', '--aggressive', '--auto'])
+      command('gc', ['--prune', '--aggressive', '--auto']).chomp
     end
     
     # reads a tree into the current index file
@@ -611,11 +611,11 @@ module Git
       arr_opts = []
       arr_opts << "--prefix=#{opts[:prefix]}" if opts[:prefix]
       arr_opts += [treeish]
-      command('read-tree', arr_opts)
+      command('read-tree', arr_opts).chomp
     end
     
     def write_tree
-      command('write-tree')
+      command('write-tree').chomp
     end
     
     def commit_tree(tree, opts = {})
@@ -628,11 +628,11 @@ module Git
       arr_opts << tree
       arr_opts << '-p' << opts[:parent] if opts[:parent]
       arr_opts += [opts[:parents]].map { |p| ['-p', p] }.flatten if opts[:parents]
-      command('commit-tree', arr_opts, true, "< #{escape t.path}")
+      command('commit-tree', arr_opts, true, "< #{escape t.path}").chomp
     end
     
     def update_ref(branch, commit)
-      command('update-ref', [branch, commit])
+      command('update-ref', [branch, commit]).chomp
     end
     
     def checkout_index(opts = {})
@@ -642,7 +642,7 @@ module Git
       arr_opts << "--all" if opts[:all]
       arr_opts << '--' << opts[:path_limiter] if opts[:path_limiter].is_a? String
 
-      command('checkout-index', arr_opts)
+      command('checkout-index', arr_opts).chomp
     end
     
     # creates an archive file
@@ -668,13 +668,13 @@ module Git
       arr_opts << "--remote=#{opts[:remote]}" if opts[:remote]
       arr_opts << sha
       arr_opts << '--' << opts[:path] if opts[:path]
-      command('archive', arr_opts, true, (opts[:add_gzip] ? '| gzip' : '') + " > #{escape file}")
+      command('archive', arr_opts, true, (opts[:add_gzip] ? '| gzip' : '') + " > #{escape file}").chomp
       return file
     end
 
     # returns the current version of git, as an Array of Fixnums.
     def current_command_version
-      output = command('version', [], false)
+      output = command('version', [], false).chomp
       version = output[/\d+\.\d+(\.\d+)+/]
       version.split('.').collect {|i| i.to_i}
     end
@@ -697,7 +697,7 @@ module Git
     private
     
     def command_lines(cmd, opts = [], chdir = true, redirect = '')
-      command(cmd, opts, chdir).split("\n")
+      command(cmd, opts, chdir).chomp.split("\n")
     end
     
     def command(cmd, opts = [], chdir = true, redirect = '', &block)
