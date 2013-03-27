@@ -734,7 +734,7 @@ module Git
       if block_given?
         IO.popen(git_cmd, &block)
       else
-        `#{git_cmd}`.chomp
+        `#{git_cmd}`
       end
     end
 
