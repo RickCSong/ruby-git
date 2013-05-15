@@ -100,8 +100,8 @@ class TestObject < Test::Unit::TestCase
   
   def test_blob_contents
     o = @git.gblob('v2.6:example.txt')
-    assert_equal('replace with new text', o.contents)
-    assert_equal('replace with new text', o.contents)  # this should be cached
+    assert_equal("replace with new text\n", o.contents)
+    assert_equal("replace with new text\n", o.contents)  # this should be cached
     
     # make sure the block is called
     block_called = false

@@ -565,7 +565,7 @@ module Git
     
     def push(remote, branch = 'master', tags = false)
       command('push', [remote, branch]).chomp
-      command('push', ['--tags', remote]) if tags.chomp
+      command('push', ['--tags', remote]).chomp if tags
     end
     
     def tag_sha(tag_name)

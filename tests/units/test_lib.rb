@@ -74,14 +74,14 @@ class TestLib < Test::Unit::TestCase
     commit << "parent 546bec6f8872efa41d5d97a369f669165ecda0de\n"
     commit << "author scott Chacon <schacon@agadorsparticus.corp.reactrix.com> 1194561188 -0800\n"
     commit << "committer scott Chacon <schacon@agadorsparticus.corp.reactrix.com> 1194561188 -0800\n"
-    commit << "\ntest"
+    commit << "\ntest\n"
     assert_equal(commit, @lib.object_contents('1cc8667014381')) # commit
     
     tree =  "040000 tree 6b790ddc5eab30f18cabdd0513e8f8dac0d2d3ed\tex_dir\n"
-    tree << "100644 blob 3aac4b445017a8fc07502670ec2dbf744213dd48\texample.txt"
+    tree << "100644 blob 3aac4b445017a8fc07502670ec2dbf744213dd48\texample.txt\n"
     assert_equal(tree, @lib.object_contents('1cc8667014381^{tree}')) #tree
     
-    blob = "1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n2"
+    blob = "1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n1\n2\n"
     assert_equal(blob, @lib.object_contents('v2.5:example.txt')) #blob
     
   end

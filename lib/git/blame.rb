@@ -27,7 +27,9 @@ class Git::Blame
 end
 
 class Git::BlameResult
-  delegate :[], :each, :each_with_index, to: :lines
+  def [](*args) lines[*args] end
+  def each(*args, &block) lines.each(*args, &block) end
+  def each_with_index(*args, &block) lines.each_with_index(*args, &block) end
 
   def initialize(base)
     @base = base

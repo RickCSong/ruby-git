@@ -33,7 +33,7 @@ class TestIndexOps < Test::Unit::TestCase
         assert(!g.status.changed.assoc('example.txt'))
         assert(!g.status.added.assoc('test-file'))
         assert(!g.status.untracked.assoc('test-file')) 
-        assert_equal('hahahaha', g.status['example.txt'].blob.contents)
+        assert_equal("hahahaha\n", g.status['example.txt'].blob.contents)
       end
     end
   end
@@ -55,7 +55,7 @@ class TestIndexOps < Test::Unit::TestCase
         g.commit('my message')
         assert(!g.status.added.assoc('test-file1'))
         assert(!g.status.untracked.assoc('test-file1')) 
-        assert_equal('blahblahblah1', g.status['test-file1'].blob.contents)
+        assert_equal("blahblahblah1\n", g.status['test-file1'].blob.contents)
       end
     end
   end
